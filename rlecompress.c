@@ -26,11 +26,59 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    int c;
+    int c, lastc = -1, count = 0;
 
     while ((c = fgetc(in)) != EOF)
     {
-        fputc(c, out);
+        if (lastc == -1)
+        {
+            lastc = c;
+            count++;
+        }
+        else
+        {
+            if (c == lastc)
+            {
+                if (count == 256)
+                {
+                    fputc(0, out);
+                    fputc(lastc, out);
+
+                    count = 1;
+                }
+                else
+                {
+                    count++;
+                }
+            }
+            else
+            {
+                if (count == 256)
+                {
+                    fputc(0, out);
+                }
+                else
+                {
+                    fputc(count, out);
+                }
+                fputc(lastc, out);
+
+                count = 1;
+                lastc = c;
+            }
+        }
+    }
+    if (lastc != -1)
+    {
+        if (count == 256)
+        {
+            fputc(0, out);
+        }
+        else
+        {
+            fputc(count, out);
+        }
+        fputc(lastc, out);
     }
 
     fclose(in);
